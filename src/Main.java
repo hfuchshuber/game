@@ -14,7 +14,7 @@ public class Main extends Application {
 	
     private static final int SIZE = 400;
 
-    private Game myGame;
+    private GameEngine myGame;
 
 
     /**
@@ -22,12 +22,9 @@ public class Main extends Application {
      */
     @Override
     public void start (Stage s) {
-    	
         // create your own game here
-    	myGame = new Game();
-
+    	myGame = new GameEngine();
         s.setTitle(myGame.getTitle());
-        
         // attach game to the stage and display it
         myGame.init(s, SIZE, SIZE);
 	}
