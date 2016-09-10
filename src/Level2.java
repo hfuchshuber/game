@@ -1,11 +1,12 @@
 import java.util.ArrayList;
+
 import javafx.scene.Scene;
 
-public class Level1 extends Level {
+public class Level2 extends Level {
 	
 	private static final int ENEMY_SIZE = 10;
-	private static final int WIN_SCORE = 10;
-	private static final int ENEMY_SPEED = 1;
+	private static final int WIN_SCORE = 50;
+	private static final int ENEMY_SPEED = 3;
 	
 	private int score = 0;
 	private Engine myEngine = new Engine();
@@ -21,7 +22,6 @@ public class Level1 extends Level {
         	//delete unused ones
         	if (enemies.get(i).getY() > scene.getHeight()) {
         		enemies.remove(i);
-        		score++;
         	}
         }
     }
@@ -30,7 +30,10 @@ public class Level1 extends Level {
 	private void spawnEnemies(ArrayList<Character> enemies, double width) {
 		Character temp = new Character(width * Math.random(), 0, ENEMY_SIZE, ENEMY_SIZE, Character.Type.ENEMY);
 		enemies.add(temp);
+		Character temp2 = new Character(width * Math.random(), 0, ENEMY_SIZE, ENEMY_SIZE, Character.Type.FOOD);
+		enemies.add(temp2);
 	}
+	
 	
 	@Override
 	public Engine.gameEnd checkCollisions(ArrayList<Character> enemies, Character player, Engine.gameEnd status) {
@@ -40,6 +43,7 @@ public class Level1 extends Level {
     					status = Engine.gameEnd.LOST;
     				} else {
     					enemies.remove(i);
+    					score++;
     				}
     		}
     	}
@@ -53,6 +57,5 @@ public class Level1 extends Level {
 	public int getScore() {
 		return score;
 	}
-	
 
 }

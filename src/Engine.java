@@ -12,57 +12,58 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
-public class Levels {
+public class Engine {
 	
-    private static final int ENEMY_SPEED = 1;
-    private static final int ENEMY_SIZE = 10;
-    private static final int WIN_SCORE = 5;
+   
     private static final int FRAMES_PER_SECOND = 60;
     private static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     private static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     private static final int KEY_INPUT_SPEED = 10;
+    
+    public enum gameEnd {
+    	CONTINUE, LOST, ADVANCE
+    }
 	
-
-    private boolean stopGame = false;
+    private gameEnd status = Engine.gameEnd.CONTINUE;
     private ArrayList<Character> enemies = new ArrayList<Character>();
-    private int counter;
-    private GameEngine myGame = new GameEngine();
-    private int level;
+    private Level myLevel;
     private Group root;
     private Character myPlayer;
     private Scene myScene;
+    private Game myGame;
    
-    public void setScore(int s) {
-    	counter = s;
+    
+    public void setgameStatus(gameEnd s) {
+    	status = s;
     }
     
-    public void setstopGame(boolean b) {
-    	stopGame = b;
-    }
     
-    public Character getPlayer() {
-    	return myPlayer;
-    }
-    
-    public void levelScene(Group r, Scene scene) {
+    public void levelScene(Group r, Scene scene, int level) {
     	root = r; 
     	myScene = scene;
+    	myGame = new Game();
+    	if (level == 1) {
+    		myLevel = new Level1(); 
+    	}
+    	if (level == 2) {
+    		myLevel = new Level2();
+    	}
     	root.getChildren().clear();
     	myPlayer = new Character(myScene.getWidth(), myScene.getHeight());
     	myPlayer.setX(myScene.getWidth() / 2 - drawPlayer(myPlayer).getBoundsInLocal().getWidth() / 2);
         myPlayer.setY(myScene.getHeight() - drawPlayer(myPlayer).getBoundsInLocal().getHeight());
         myScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
-        // order added to the group is the order in which they are drawn
-        // respond to input
     }
 
     public void gameEngine() {
-    	KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
-                e -> step(SECOND_DELAY));
-    	Timeline animation = new Timeline();
-    	animation.setCycleCount(Timeline.INDEFINITE);
-    	animation.getKeyFrames().add(frame);
-    	animation.play();
+    	if (status == Engine.gameEnd.CONTINUE) {
+    		KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
+    				e -> step(SECOND_DELAY));
+    		Timeline animation = new Timeline();
+    		animation.setCycleCount(Timeline.INDEFINITE);
+    		animation.getKeyFrames().add(frame);
+    		animation.play();
+    	}
     }
     
     /**
@@ -74,38 +75,28 @@ public class Levels {
     public void step (double elapsedTime) {
     	root.getChildren().clear();
     	root.getChildren().add(drawPlayer(myPlayer));
-    	if (!stopGame) { 
+    	if (status == Engine.gameEnd.CONTINUE) { 
     		root.getChildren().add(scoreLabel());
-    		moveEnemies();
-    		checkCollisions();
+    		myLevel.moveEnemies(enemies, myScene);
+    		status = myLevel.checkCollisions(enemies, myPlayer, status);
     		for (int i = 0; i < enemies.size(); i++) {
     			root.getChildren().add(drawEnemy(enemies.get(i)));
     		}
     	}
     	else {
-    		scoreLabel();
-    		myGame.stopGame(root, myScene);
+    		myGame.stopGame(root, myScene, status);
     	}
     }
     
-	public void spawnEnemies() {
-    	Character temp = new Character(myScene.getWidth() * Math.random(), 0, ENEMY_SIZE, ENEMY_SIZE, true);
-		enemies.add(temp);
-		if (level == 2) {
-			Character temp2 = new Character(myScene.getWidth() * Math.random(), 0, ENEMY_SIZE, ENEMY_SIZE, false);
-			enemies.add(temp2);
-		}
-	}
-    
 	private Label scoreLabel() {
-		Label scoreLabel = new Label("Score: " + counter);
+		Label scoreLabel = new Label("Score: " + myLevel.getScore());
 		scoreLabel.setTextFill(Color.WHITE);
 		return scoreLabel;
 	}
     
     public Rectangle drawEnemy(Character enemy) {
 		Rectangle visual = new Rectangle(enemy.getX(), enemy.getY(), enemy.getHeight(), enemy.getWidth());
-		if (enemy.getType()) {
+		if (enemy.getType() == Character.Type.ENEMY) {
 			visual.setFill(Color.RED);
 		} else {
 			visual.setFill(Color.GREEN);
@@ -119,46 +110,6 @@ public class Levels {
         visual.setX(player.getX());
         visual.setY(player.getY());
     	return visual; 
-    }
-    
-
-	public void moveEnemies() {
-		if (Math.random() > .99 && enemies.size() < 30 || enemies.size() < 2) {
-			spawnEnemies();
-		}
-    	for (int i = 0; i < enemies.size(); i++) {
-    		//move down screen
-        	enemies.get(i).setY(enemies.get(i).getY() + ENEMY_SPEED);
-        	//delete unused ones
-        	if (enemies.get(i).getY() > myScene.getHeight()) {
-        		enemies.remove(i);
-        		if (level == 1) {
-        			counter++;
-        		}
-        	}
-        	if (counter > WIN_SCORE) {
-        		stopGame = true;
-        	}
-        }
-    }
-	
-
-   
-
-    
-    
-    public void checkCollisions() {
-    	for (int i = 0; i < enemies.size(); i++) {
-    		if (drawEnemy(enemies.get(i)).intersects(drawPlayer(myPlayer).getBoundsInParent())) {
-    				if (enemies.get(i).getType()) {
-    					stopGame = true;
-    					myGame.isGameOver(true);
-    				} else {
-    					enemies.remove(i);
-    					counter++;
-    				}
-    		}
-    	}
     }
     
     private void handleKeyInput (KeyCode code) {

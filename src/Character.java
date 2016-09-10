@@ -8,24 +8,30 @@
 
 public class Character {
 	
+	public enum Type {
+		ENEMY, FOOD
+	}
+	
 	private double posX;
 	private double posY;
 	private double height;
 	private double width;
-	private boolean type;
+	private Type type;
+	
 	
 	public Character(double x, double y) {
 		this.posX = x;
 		this.posY = y;
 	}
 	
-	public Character (double x, double y, double h, double w, boolean bool) {
+	public Character (double x, double y, double h, double w, Type t) {
 		this.posX = x;
 		this.posY = y;
 		this.height = h;
 		this.width = w;
-		this.type = bool;
+		this.type = t;
 	}
+
 	
 	public double getY() {
 		return posY;
@@ -43,7 +49,7 @@ public class Character {
 		return width;
 	}
 	
-	public boolean getType() {
+	public Type getType() {
 		return type;
 	}
 	
