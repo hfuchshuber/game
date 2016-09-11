@@ -4,7 +4,7 @@ import javafx.scene.Scene;
 public class Level1 extends Level {
 	
 	private static final int ENEMY_SIZE = 10;
-	private static final int WIN_SCORE = 10;
+	private static final int WIN_SCORE = 20;
 	private static final int ENEMY_SPEED = 1;
 	
 	private int score = 0;

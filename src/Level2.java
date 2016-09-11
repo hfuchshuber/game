@@ -13,7 +13,7 @@ public class Level2 extends Level {
 	
 	@Override
 	public void moveEnemies(ArrayList<Character> enemies, Scene scene) {
-		if (Math.random() > .99 && enemies.size() < 30 || enemies.size() < 2) {
+		if (Math.random() > .96 && enemies.size() < 30 || enemies.size() < 2) {
 			spawnEnemies(enemies, scene.getWidth());
 		}
     	for (int i = 0; i < enemies.size(); i++) {
@@ -48,7 +48,7 @@ public class Level2 extends Level {
     		}
     	}
     	if (score > WIN_SCORE) {
-    		status = Engine.gameEnd.ADVANCE;
+    		status = Engine.gameEnd.WIN;
     	}
     	return status;
     }

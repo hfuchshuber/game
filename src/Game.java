@@ -1,10 +1,13 @@
-
-
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import javafx.scene.control.Button;
+import javafx.util.Duration;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
 
 
 /**
@@ -15,12 +18,17 @@ import javafx.scene.control.Button;
  */
 class Game {
     private static final String TITLE = "Dodgeblocks";
+    private static final int FRAMES_PER_SECOND = 60;
+    private static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     
     private Scene myScene;
     private Group root;
     private int level = 1;
     private Stage myStage;
     private Engine myEngine;
+    private String cheatCode = ""; 
+    private Timeline animation;
+
 
 
     /**
@@ -42,43 +50,114 @@ class Game {
     	myScene = new Scene(root, width, height, Color.BLACK);
         myStage.setScene(myScene);
         myStage.show();
-        splashScreen();
+        setScreen("start.png");
         return myScene;
     }
     
     
-    public void splashScreen() {
-    	Button start = new Button("hi");
-    	start.setOnAction(e -> restartGame(myStage));
-    	root.getChildren().add(start);
+    private void checkInput(String file) {
+    	KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
+    			e -> checkCheatCode(file));
+        animation = new Timeline();
+        animation.setCycleCount(Timeline.INDEFINITE);
+        animation.getKeyFrames().add(frame);
+        animation.play();
     }
     
+    private void checkCheatCode(String file) {
+    	if (cheatCode.equals("lvltwo")) {
+        	animation.stop();
+        	level = 2;
+        	setScreen("levelup.png");
+        }
+    	if (cheatCode.equals("end")) {
+    		animation.stop();
+    		setScreen("wingraphic.png"); 
+    	}
+    	if (cheatCode.equals("case3")) {
+    		animation.stop();
+    		restartGame(myStage);
+    	}
+    	if (cheatCode.equals("case4")) {
+    		animation.stop();
+    		setScreen("start.png");
+    	}
+    }
     
+    private void setScreen(String file) {
+    	Image image = new Image(getClass().getClassLoader().getResourceAsStream(file));
+        ImageView startup = new ImageView(image);
+        startup.setFitWidth(myScene.getWidth());
+        startup.setPreserveRatio(true);
+        root.getChildren().add(startup);
+        checkInput(file);
+        myScene.setOnKeyPressed(e -> cheatCode(e.getCode()));
+    }
     
     public void stopGame(Group r, Scene s, Engine.gameEnd status) {
     	root = r;
     	myScene = s;
-    	String txt = "";
+    	String file = "";
     	if (status == Engine.gameEnd.ADVANCE) {
-    			level = 2;
-    			txt = "Start Next Level";
-    	} else {
-    		level = 1;
-        	txt = "Restart";
+    		level = 2;
+    		file = "levelup.png";
     	}
-    	Button newgamebutton = new Button(txt);
-    	newgamebutton.setOnAction(e -> restartGame(myStage));
-    	root.getChildren().add(newgamebutton);
+    	if (status == Engine.gameEnd.WIN) {
+    		level = 1;
+    		file = "wingraphic.png";
+    	}
+    	if (status == Engine.gameEnd.LOST) {
+        	level = 1;
+        	file = "losegraphic.png";
+    	}
+    	setScreen(file);
     }
     
-    
-    
-	public void restartGame(Stage s) {
+	private void restartGame(Stage s) {
+		animation.stop();
 		myEngine = new Engine();
 		myEngine.levelScene(root, myScene, level);
-		myEngine.gameEngine();
 	}
 	
+	
+    private void cheatCode (KeyCode code) {
+        switch (code) {
+            case L:
+            	cheatCode = cheatCode + 'l';
+            	break;
+            case V:
+            	cheatCode = cheatCode + 'v';
+            	break;
+            case T:
+            	cheatCode = cheatCode + 't';
+            	break;
+            case W:
+            	cheatCode = cheatCode + 'w';
+            	break;
+            case O:
+            	cheatCode = cheatCode + 'o';
+            	break;
+            case UP:
+            	cheatCode = "";
+            	break;
+            case E:
+            	cheatCode = cheatCode + "e";
+            	break; 
+            case N:
+            	cheatCode = cheatCode + "n";
+            	break; 
+            case D:
+            	cheatCode = cheatCode + "d";
+            	break; 
+            case SPACE: 
+            	cheatCode = "case3";
+            	break;
+            case RIGHT:
+            	cheatCode = "case4";
+            	break;
+            default:
+    	}
+    }
     
 
 }

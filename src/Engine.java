@@ -18,10 +18,10 @@ public class Engine {
     private static final int FRAMES_PER_SECOND = 60;
     private static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
     private static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
-    private static final int KEY_INPUT_SPEED = 10;
+    private static final int KEY_INPUT_SPEED = 15;
     
     public enum gameEnd {
-    	CONTINUE, LOST, ADVANCE
+    	CONTINUE, LOST, ADVANCE, WIN
     }
 	
     private gameEnd status = Engine.gameEnd.CONTINUE;
@@ -31,16 +31,16 @@ public class Engine {
     private Character myPlayer;
     private Scene myScene;
     private Game myGame;
+    private Timeline animation;
+    Image charImage = new Image(getClass().getClassLoader().getResourceAsStream("tinyrocket.png"));
    
     
-    public void setgameStatus(gameEnd s) {
-    	status = s;
-    }
-    
+
     
     public void levelScene(Group r, Scene scene, int level) {
     	root = r; 
     	myScene = scene;
+    	root.getChildren().clear();
     	myGame = new Game();
     	if (level == 1) {
     		myLevel = new Level1(); 
@@ -48,21 +48,21 @@ public class Engine {
     	if (level == 2) {
     		myLevel = new Level2();
     	}
-    	root.getChildren().clear();
     	myPlayer = new Character(myScene.getWidth(), myScene.getHeight());
     	myPlayer.setX(myScene.getWidth() / 2 - drawPlayer(myPlayer).getBoundsInLocal().getWidth() / 2);
         myPlayer.setY(myScene.getHeight() - drawPlayer(myPlayer).getBoundsInLocal().getHeight());
         myScene.setOnKeyPressed(e -> handleKeyInput(e.getCode()));
+        gameEngine();
     }
 
-    public void gameEngine() {
+    private void gameEngine() {
     	if (status == Engine.gameEnd.CONTINUE) {
     		KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
     				e -> step(SECOND_DELAY));
-    		Timeline animation = new Timeline();
+    		animation = new Timeline();
     		animation.setCycleCount(Timeline.INDEFINITE);
     		animation.getKeyFrames().add(frame);
-    		animation.play();
+    		animation.playFromStart();
     	}
     }
     
@@ -72,7 +72,7 @@ public class Engine {
      * Note, there are more sophisticated ways to animate shapes,
      * but these simple ways work too.
      */
-    public void step (double elapsedTime) {
+    private void step (double elapsedTime) {
     	root.getChildren().clear();
     	root.getChildren().add(drawPlayer(myPlayer));
     	if (status == Engine.gameEnd.CONTINUE) { 
@@ -84,6 +84,7 @@ public class Engine {
     		}
     	}
     	else {
+    		animation.stop();
     		myGame.stopGame(root, myScene, status);
     	}
     }
@@ -105,8 +106,7 @@ public class Engine {
 	}
     
     public ImageView drawPlayer(Character player) {
-    	Image image = new Image(getClass().getClassLoader().getResourceAsStream("tinyrocket.png"));
-        ImageView visual = new ImageView(image);
+        ImageView visual = new ImageView(charImage);
         visual.setX(player.getX());
         visual.setY(player.getY());
     	return visual; 
