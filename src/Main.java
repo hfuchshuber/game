@@ -4,11 +4,12 @@ import javafx.stage.Stage;
 
 /**
  * This is the main program, it is basically boilerplate to create
- * an animated scene.
+ * a Stage.
  * 
  * @author Hannah Fuchshuber
  * Originally written by Robert Duvall
  */
+
 public class Main extends Application {
 	
     private static final int SIZE = 400;

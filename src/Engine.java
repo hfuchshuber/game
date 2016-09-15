@@ -1,5 +1,9 @@
-import java.util.ArrayList;
+// This entire file is part of my masterpiece.
+// HANNAH FUCHSHUBER
 
+
+
+import java.util.ArrayList;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.scene.Group;
@@ -12,12 +16,17 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
+/**
+ * This is the Engine class, used to run the animation of game play.
+ * 
+ * @author Hannah Fuchshuber
+ */
+
 public class Engine {
 	
    
     private static final int FRAMES_PER_SECOND = 60;
     private static final int MILLISECOND_DELAY = 1000 / FRAMES_PER_SECOND;
-    private static final double SECOND_DELAY = 1.0 / FRAMES_PER_SECOND;
     private static final int KEY_INPUT_SPEED = 15;
     
     public enum gameEnd {
@@ -37,6 +46,13 @@ public class Engine {
     
 
     
+    /**
+     * Sets up the scene
+     * 
+     * @param Group
+     * @param Scene
+     * @param int
+     */
     public void levelScene(Group r, Scene scene, int level) {
     	root = r; 
     	myScene = scene;
@@ -55,10 +71,13 @@ public class Engine {
         gameEngine();
     }
 
+    /**
+     * Starts the timeline for each animation cycle
+     */
     private void gameEngine() {
     	if (status == Engine.gameEnd.CONTINUE) {
     		KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
-    				e -> step(SECOND_DELAY));
+    				e -> step());
     		animation = new Timeline();
     		animation.setCycleCount(Timeline.INDEFINITE);
     		animation.getKeyFrames().add(frame);
@@ -69,10 +88,8 @@ public class Engine {
     /**
      * Change properties of shapes to animate them
      * 
-     * Note, there are more sophisticated ways to animate shapes,
-     * but these simple ways work too.
      */
-    private void step (double elapsedTime) {
+    private void step () {
     	root.getChildren().clear();
     	root.getChildren().add(drawPlayer(myPlayer));
     	if (status == Engine.gameEnd.CONTINUE) { 
@@ -89,12 +106,22 @@ public class Engine {
     	}
     }
     
+	/**
+	 * Creates score label 
+	 * @return Label
+	 */
 	private Label scoreLabel() {
 		Label scoreLabel = new Label("Score: " + myLevel.getScore());
 		scoreLabel.setTextFill(Color.WHITE);
 		return scoreLabel;
 	}
     
+    /**
+     * Creates rectangles for enemies
+     * 
+     * @param enemy
+     * @return Rectangle
+     */
     public Rectangle drawEnemy(Character enemy) {
 		Rectangle visual = new Rectangle(enemy.getX(), enemy.getY(), enemy.getHeight(), enemy.getWidth());
 		if (enemy.getType() == Character.Type.ENEMY) {
@@ -105,6 +132,12 @@ public class Engine {
 		return visual;
 	}
     
+    /**
+     * Creates picture for Player
+     * 
+     * @param Character
+     * @return ImageView
+     */
     public ImageView drawPlayer(Character player) {
         ImageView visual = new ImageView(charImage);
         visual.setX(player.getX());
@@ -112,6 +145,11 @@ public class Engine {
     	return visual; 
     }
     
+    /**
+     * Implements Player's movement
+     * 
+     * @param KeyCode
+     */
     private void handleKeyInput (KeyCode code) {
     	
         switch (code) {

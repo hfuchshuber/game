@@ -11,11 +11,12 @@ import javafx.scene.input.KeyCode;
 
 
 /**
- * Separate the game code from some of the boilerplate code.
+ * This is the Game class, used to control the different screens and control higher-level conditions of the game.
  * 
  * @author Hannah Fuchshuber
  * Originally written by Robert Duvall
  */
+
 class Game {
     private static final String TITLE = "Dodgeblocks";
     private static final int FRAMES_PER_SECOND = 60;
@@ -41,6 +42,10 @@ class Game {
 
     /**
      * Create the game's scene
+     * 
+     * @param Stage
+     * @param int
+     * @param height
      */
     public Scene init (Stage s, int width, int height) {
     	//pass the stage 
@@ -54,7 +59,11 @@ class Game {
         return myScene;
     }
     
-    
+	/**
+	 * This sets the timeline animation for the screens
+	 * 
+	 * @param String
+	 */
     private void checkInput(String file) {
     	KeyFrame frame = new KeyFrame(Duration.millis(MILLISECOND_DELAY),
     			e -> checkCheatCode(file));
@@ -64,6 +73,11 @@ class Game {
         animation.play();
     }
     
+	/**
+	 * This checks the condition of the game
+	 * 
+	 * @param String
+	 */
     private void checkCheatCode(String file) {
     	if (cheatCode.equals("lvltwo")) {
         	animation.stop();
@@ -84,6 +98,11 @@ class Game {
     	}
     }
     
+	/**
+	 * This sets the scene with a different screen
+	 * 
+	 * @param String
+	 */
     private void setScreen(String file) {
     	Image image = new Image(getClass().getClassLoader().getResourceAsStream(file));
         ImageView startup = new ImageView(image);
@@ -94,6 +113,11 @@ class Game {
         myScene.setOnKeyPressed(e -> cheatCode(e.getCode()));
     }
     
+	/**
+	 * This sets up the game for different conditions
+	 * 
+	 * @param String
+	 */
     public void stopGame(Group r, Scene s, Engine.gameEnd status) {
     	root = r;
     	myScene = s;
@@ -113,6 +137,12 @@ class Game {
     	setScreen(file);
     }
     
+    
+	/**
+	 * This calls into the Engine class to start the animation
+	 *
+	 * @param Stage
+	 */
 	private void restartGame(Stage s) {
 		animation.stop();
 		myEngine = new Engine();
@@ -120,6 +150,11 @@ class Game {
 	}
 	
 	
+	/**
+	 * This checks if the cheat codes are entered into the keyboard
+	 * 
+	 * @param KeyCode
+	 */
     private void cheatCode (KeyCode code) {
         switch (code) {
             case L:

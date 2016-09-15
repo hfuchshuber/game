@@ -2,18 +2,31 @@ import java.util.ArrayList;
 
 import javafx.scene.Scene;
 
+/**
+ * This is the Level2 class, used to specify conditions for Level 2.
+ * 
+ * @author Hannah Fuchshuber
+ */
+
 public class Level2 extends Level {
 	
 	private static final int ENEMY_SIZE = 10;
 	private static final int WIN_SCORE = 50;
 	private static final int ENEMY_SPEED = 3;
+	private static final double SPAWN_RATE = 0.96;
 	
 	private int score = 0;
 	private Engine myEngine = new Engine();
 	
+	/**
+	 * This moves the enemies down the screen and deletes then when they are no longer needed
+	 * 
+	 * @param ArrayList<Character>
+	 * @param Scene
+	 */
 	@Override
 	public void moveEnemies(ArrayList<Character> enemies, Scene scene) {
-		if (Math.random() > .96 && enemies.size() < 30 || enemies.size() < 2) {
+		if (Math.random() > SPAWN_RATE && enemies.size() < 30 || enemies.size() < 2) { 
 			spawnEnemies(enemies, scene.getWidth());
 		}
     	for (int i = 0; i < enemies.size(); i++) {
@@ -26,7 +39,12 @@ public class Level2 extends Level {
         }
     }
 
-
+	/**
+	 * This makes the enemies at the top of screen
+	 * 
+	 * @param ArrayList<Character>
+	 * @param double
+	 */
 	private void spawnEnemies(ArrayList<Character> enemies, double width) {
 		Character temp = new Character(width * Math.random(), 0, ENEMY_SIZE, ENEMY_SIZE, Character.Type.ENEMY);
 		enemies.add(temp);
@@ -34,7 +52,13 @@ public class Level2 extends Level {
 		enemies.add(temp2);
 	}
 	
-	
+	/**
+	 * Checks collisions between characters and returns condition of game
+	 * 
+	 * @param ArrayList<Character>
+	 * @param Character
+	 * @param Engine.gameEnd
+	 */
 	@Override
 	public Engine.gameEnd checkCollisions(ArrayList<Character> enemies, Character player, Engine.gameEnd status) {
     	for (int i = 0; i < enemies.size(); i++) {
@@ -53,6 +77,12 @@ public class Level2 extends Level {
     	return status;
     }
 	
+	
+	/**
+	 * Gets the current score
+	 * 
+	 * @return int
+	 */
 	@Override
 	public int getScore() {
 		return score;
